@@ -1,9 +1,7 @@
 package br.com.rota_verde.rota_verde.alert.dto;
 
 import br.com.rota_verde.rota_verde.alert.model.AlertModel;
-
 import java.time.LocalDate;
-import java.util.Date;
 
 public record AlertDTO(
         Long idAlert,

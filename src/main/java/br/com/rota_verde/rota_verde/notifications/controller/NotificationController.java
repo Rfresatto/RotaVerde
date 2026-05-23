@@ -2,7 +2,6 @@ package br.com.rota_verde.rota_verde.notifications.controller;
 
 import br.com.rota_verde.rota_verde.notifications.dto.CreateNotificationDTO;
 import br.com.rota_verde.rota_verde.notifications.dto.NotificationDTO;
-import br.com.rota_verde.rota_verde.notifications.model.NotificationModel;
 import br.com.rota_verde.rota_verde.notifications.service.NotificationService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
