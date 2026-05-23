@@ -11,7 +11,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -31,7 +32,7 @@ public class CollectionService {
         CollectionsModel model = new CollectionsModel();
         BeanUtils.copyProperties(dto, model);
         model.setContainer(container);
-        model.setCollectionDate(new Date());
+        model.setCollectionDate(LocalDate.now());
         return new CollectionDTO(collectionRepository.save(model));
     }
 
@@ -59,5 +60,30 @@ public class CollectionService {
         BeanUtils.copyProperties(dto, model);
         model.setContainer(container);
         return new CollectionDTO(collectionRepository.save(model));
+    }
+
+    public List<CollectionDTO> findByContainer(Long containerId) {
+        return collectionRepository.findByContainer(containerId)
+                .stream().map(CollectionDTO::new).toList();
+    }
+
+    public List<CollectionDTO> findByDateRange(LocalDate startDate, LocalDate endDate) {
+        return collectionRepository.findByDateRange(startDate, endDate)
+                .stream().map(CollectionDTO::new).toList();
+    }
+
+    public List<CollectionDTO> findByResponsible(String responsible) {
+        return collectionRepository.findByResponsible(responsible)
+                .stream().map(CollectionDTO::new).toList();
+    }
+
+    public List<CollectionDTO> findByDestination(String destination) {
+        return collectionRepository.findByDestination(destination)
+                .stream().map(CollectionDTO::new).toList();
+    }
+
+    public List<CollectionDTO> findByMinWeight(BigDecimal weight) {
+        return collectionRepository.findByMinWeight(weight)
+                .stream().map(CollectionDTO::new).toList();
     }
 }

@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -41,7 +41,7 @@ public class NotificationModel {
     private String message;
 
     @Column(name = "SENT_AT", nullable = false)
-    private Date sentAt;
+    private LocalDate sentAt;
 
     @Column(name = "SENT", nullable = false)
     private Character sent = 'N';

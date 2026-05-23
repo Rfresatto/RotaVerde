@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 @Getter
 @Setter
@@ -33,7 +33,7 @@ public class CollectionsModel {
     private ContainerModel container;
 
     @Column(name = "COLLECTION_DATE", nullable = false)
-    private Date collectionDate;
+    private LocalDate collectionDate;
 
     @Column(name = "COLLECTED_WEIGHT_KG", nullable = false, precision = 10, scale = 2)
     private BigDecimal collectedWeightKg;

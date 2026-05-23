@@ -1,7 +1,8 @@
 package br.com.rota_verde.rota_verde.notifications.dto;
 
 import br.com.rota_verde.rota_verde.notifications.model.NotificationModel;
-import java.util.Date;
+
+import java.time.LocalDate;
 
 public record NotificationDTO(
         Long notificationId,
@@ -9,7 +10,7 @@ public record NotificationDTO(
         String recipient,
         String channel,
         String message,
-        Date sentAt,
+        LocalDate sentAt,
         Character sent
 ) {
     public NotificationDTO(NotificationModel model) {

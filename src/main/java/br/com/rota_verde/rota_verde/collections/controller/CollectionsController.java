@@ -9,6 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -61,6 +63,53 @@ public class CollectionsController {
             return ResponseEntity.ok(collectionService.updateCollection(id, dto));
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/collections/container/{containerId}")
+    public ResponseEntity<List<CollectionDTO>> findByContainer(@PathVariable Long containerId) {
+        try {
+            return ResponseEntity.ok(collectionService.findByContainer(containerId));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/collections/date")
+    public ResponseEntity<List<CollectionDTO>> findByDateRange(
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate) {
+        try {
+            return ResponseEntity.ok(collectionService.findByDateRange(startDate, endDate));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/collections/responsible/{responsible}")
+    public ResponseEntity<List<CollectionDTO>> findByResponsible(@PathVariable String responsible) {
+        try {
+            return ResponseEntity.ok(collectionService.findByResponsible(responsible));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/collections/destination/{destination}")
+    public ResponseEntity<List<CollectionDTO>> findByDestination(@PathVariable String destination) {
+        try {
+            return ResponseEntity.ok(collectionService.findByDestination(destination));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/collections/weight")
+    public ResponseEntity<List<CollectionDTO>> findByMinWeight(@RequestParam BigDecimal weight) {
+        try {
+            return ResponseEntity.ok(collectionService.findByMinWeight(weight));
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

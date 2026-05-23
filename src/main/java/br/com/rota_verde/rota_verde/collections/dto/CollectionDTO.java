@@ -2,12 +2,12 @@ package br.com.rota_verde.rota_verde.collections.dto;
 
 import br.com.rota_verde.rota_verde.collections.model.CollectionsModel;
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 public record CollectionDTO(
         Long collectionId,
         Long containerId,
-        Date collectionDate,
+        LocalDate collectionDate,
         BigDecimal collectedWeightKg,
         String responsible,
         String destination,

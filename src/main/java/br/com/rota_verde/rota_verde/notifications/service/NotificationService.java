@@ -11,7 +11,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Getter
@@ -31,7 +31,7 @@ public class NotificationService {
         NotificationModel model = new NotificationModel();
         BeanUtils.copyProperties(dto, model);
         model.setAlert(alert);
-        model.setSentAt(new Date()); // ← default SYSDATE
+        model.setSentAt(LocalDate.now());
         return new NotificationDTO(notificationRepository.save(model));
     }
 
@@ -59,5 +59,30 @@ public class NotificationService {
         BeanUtils.copyProperties(dto, model);
         model.setAlert(alert);
         return new NotificationDTO(notificationRepository.save(model));
+    }
+
+    public List<NotificationDTO> findUnsentNotifications() {
+        return notificationRepository.findUnsentNotifications()
+                .stream().map(NotificationDTO::new).toList();
+    }
+
+    public List<NotificationDTO> findByChannel(String channel) {
+        return notificationRepository.findByChannel(channel)
+                .stream().map(NotificationDTO::new).toList();
+    }
+
+    public List<NotificationDTO> findByAlert(Long alertId) {
+        return notificationRepository.findByAlert(alertId)
+                .stream().map(NotificationDTO::new).toList();
+    }
+
+    public List<NotificationDTO> findByRecipient(String recipient) {
+        return notificationRepository.findByRecipient(recipient)
+                .stream().map(NotificationDTO::new).toList();
+    }
+
+    public List<NotificationDTO> findByDateRange(LocalDate startDate, LocalDate endDate) {
+        return notificationRepository.findByDateRange(startDate, endDate)
+                .stream().map(NotificationDTO::new).toList();
     }
 }
