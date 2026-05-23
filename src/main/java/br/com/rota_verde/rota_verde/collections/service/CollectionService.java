@@ -1,0 +1,63 @@
+package br.com.rota_verde.rota_verde.collections.service;
+
+import br.com.rota_verde.rota_verde.collections.dto.CollectionDTO;
+import br.com.rota_verde.rota_verde.collections.dto.CreateCollectionDTO;
+import br.com.rota_verde.rota_verde.collections.model.CollectionsModel;
+import br.com.rota_verde.rota_verde.collections.repository.CollectionsRepository;
+import br.com.rota_verde.rota_verde.containers.model.ContainerModel;
+import br.com.rota_verde.rota_verde.containers.repository.ContainerRepository;
+import lombok.Getter;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.Date;
+import java.util.List;
+
+@Getter
+@Service
+public class CollectionService {
+
+    @Autowired
+    private CollectionsRepository collectionRepository;
+
+    @Autowired
+    private ContainerRepository containerRepository;
+
+    public CollectionDTO saveCollection(CreateCollectionDTO dto) {
+        ContainerModel container = containerRepository.findById(dto.containerId())
+                .orElseThrow(() -> new RuntimeException("Container não encontrado."));
+
+        CollectionsModel model = new CollectionsModel();
+        BeanUtils.copyProperties(dto, model);
+        model.setContainer(container);
+        model.setCollectionDate(new Date());
+        return new CollectionDTO(collectionRepository.save(model));
+    }
+
+    public CollectionDTO findCollection(Long id) {
+        return new CollectionDTO(collectionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Coleta não encontrada.")));
+    }
+
+    public List<CollectionDTO> findManyCollections() {
+        return collectionRepository.findAll().stream()
+                .map(CollectionDTO::new).toList();
+    }
+
+    public void deleteCollection(Long id) {
+        CollectionsModel model = collectionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Coleta não encontrada."));
+        collectionRepository.delete(model);
+    }
+
+    public CollectionDTO updateCollection(Long id, CreateCollectionDTO dto) {
+        CollectionsModel model = collectionRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Coleta não encontrada."));
+        ContainerModel container = containerRepository.findById(dto.containerId())
+                .orElseThrow(() -> new RuntimeException("Container não encontrado."));
+        BeanUtils.copyProperties(dto, model);
+        model.setContainer(container);
+        return new CollectionDTO(collectionRepository.save(model));
+    }
+}
