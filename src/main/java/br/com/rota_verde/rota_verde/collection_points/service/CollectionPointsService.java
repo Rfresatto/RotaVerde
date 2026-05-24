@@ -4,9 +4,12 @@ import br.com.rota_verde.rota_verde.collection_points.dto.CollectionPointsDTO;
 import br.com.rota_verde.rota_verde.collection_points.dto.CreateCollectionPointsDTO;
 import br.com.rota_verde.rota_verde.collection_points.model.CollectionPointsModel;
 import br.com.rota_verde.rota_verde.collection_points.repository.CollectionPointsRepository;
+import br.com.rota_verde.rota_verde.exception.CollectionPointNotFoundException;
 import lombok.Getter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -27,23 +30,23 @@ public class CollectionPointsService {
 
     public CollectionPointsDTO findCollectionPoint(Long id) {
         return new CollectionPointsDTO(collectionPointRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Ponto de coleta não encontrado.")));
+                .orElseThrow(() -> new CollectionPointNotFoundException("Ponto de coleta não encontrado.")));
     }
 
-    public List<CollectionPointsDTO> findManyCollectionPoints() {
-        return collectionPointRepository.findAll().stream()
-                .map(CollectionPointsDTO::new).toList();
+    public Page<CollectionPointsDTO> findManyCollectionPoints(Pageable pageable) {
+        return collectionPointRepository.findAll(pageable)
+                .map(CollectionPointsDTO::new);
     }
 
     public void deleteCollectionPoint(Long id) {
         CollectionPointsModel model = collectionPointRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Ponto de coleta não encontrado."));
+                .orElseThrow(() -> new CollectionPointNotFoundException("Ponto de coleta não encontrado."));
         collectionPointRepository.delete(model);
     }
 
     public CollectionPointsDTO updateCollectionPoint(Long id, CreateCollectionPointsDTO dto) {
         CollectionPointsModel model = collectionPointRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Ponto de coleta não encontrado."));
+                .orElseThrow(() -> new CollectionPointNotFoundException("Ponto de coleta não encontrado."));
         BeanUtils.copyProperties(dto, model);
         return new CollectionPointsDTO(collectionPointRepository.save(model));
     }

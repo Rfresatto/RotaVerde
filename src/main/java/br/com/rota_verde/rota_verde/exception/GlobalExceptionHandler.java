@@ -12,24 +12,54 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    private Map<String, Object> buildBody(int status, String error, String message) {
+        Map<String, Object> body = new LinkedHashMap<>();
+        body.put("status", status);
+        body.put("error", error);
+        body.put("message", message);
+        body.put("timestamp", LocalDateTime.now());
+        return body;
+    }
+
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<Map<String, Object>> handleUserNotFound(UserNotFoundException ex) {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("status", 404);
-        body.put("error", "Not Found");
-        body.put("message", ex.getMessage());
-        body.put("timestamp", LocalDateTime.now());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(buildBody(404, "Not Found", ex.getMessage()));
+    }
 
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    @ExceptionHandler(CollectionPointNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleCollectionPointNotFound(CollectionPointNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(buildBody(404, "Not Found", ex.getMessage()));
+    }
+
+    @ExceptionHandler(ContainerNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleContainerNotFound(ContainerNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(buildBody(404, "Not Found", ex.getMessage()));
+    }
+
+    @ExceptionHandler(AlertNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleAlertNotFound(AlertNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(buildBody(404, "Not Found", ex.getMessage()));
+    }
+
+    @ExceptionHandler(CollectionNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleCollectionNotFound(CollectionNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(buildBody(404, "Not Found", ex.getMessage()));
+    }
+
+    @ExceptionHandler(NotificationNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleNotificationNotFound(NotificationNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(buildBody(404, "Not Found", ex.getMessage()));
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneric(Exception ex) {
-        Map<String, Object> body = new LinkedHashMap<>();
-        body.put("status", 500);
-        body.put("error", "Internal Server Error");
-        body.put("timestamp", LocalDateTime.now());
-
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(buildBody(500, "Internal Server Error", "Erro interno no servidor."));
     }
 }

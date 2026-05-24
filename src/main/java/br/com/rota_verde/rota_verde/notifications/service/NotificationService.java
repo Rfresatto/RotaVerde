@@ -2,6 +2,8 @@ package br.com.rota_verde.rota_verde.notifications.service;
 
 import br.com.rota_verde.rota_verde.alert.model.AlertModel;
 import br.com.rota_verde.rota_verde.alert.repository.AlertRepository;
+import br.com.rota_verde.rota_verde.exception.AlertNotFoundException;
+import br.com.rota_verde.rota_verde.exception.NotificationNotFoundException;
 import br.com.rota_verde.rota_verde.notifications.dto.CreateNotificationDTO;
 import br.com.rota_verde.rota_verde.notifications.dto.NotificationDTO;
 import br.com.rota_verde.rota_verde.notifications.model.NotificationModel;
@@ -9,6 +11,8 @@ import br.com.rota_verde.rota_verde.notifications.repository.NotificationReposit
 import lombok.Getter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -26,7 +30,7 @@ public class NotificationService {
 
     public NotificationDTO saveNotification(CreateNotificationDTO dto) {
         AlertModel alert = alertRepository.findById(dto.alertId())
-                .orElseThrow(() -> new RuntimeException("Alerta não encontrado."));
+                .orElseThrow(() -> new AlertNotFoundException("Alerta não encontrado."));
 
         NotificationModel model = new NotificationModel();
         BeanUtils.copyProperties(dto, model);
@@ -37,25 +41,24 @@ public class NotificationService {
 
     public NotificationDTO findNotification(Long id) {
         return new NotificationDTO(notificationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Notificação não encontrada.")));
+                .orElseThrow(() -> new NotificationNotFoundException("Notificação não encontrada.")));
     }
 
-    public List<NotificationDTO> findManyNotifications() {
-        return notificationRepository.findAll().stream()
-                .map(NotificationDTO::new).toList();
+    public Page<NotificationDTO> findManyNotifications(Pageable pageable) {
+        return notificationRepository.findAll(pageable).map(NotificationDTO::new);
     }
 
     public void deleteNotification(Long id) {
         NotificationModel model = notificationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Notificação não encontrada."));
+                .orElseThrow(() -> new NotificationNotFoundException("Notificação não encontrada."));
         notificationRepository.delete(model);
     }
 
     public NotificationDTO updateNotification(Long id, CreateNotificationDTO dto) {
         NotificationModel model = notificationRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Notificação não encontrada."));
+                .orElseThrow(() -> new NotificationNotFoundException("Notificação não encontrada."));
         AlertModel alert = alertRepository.findById(dto.alertId())
-                .orElseThrow(() -> new RuntimeException("Alerta não encontrado."));
+                .orElseThrow(() -> new AlertNotFoundException("Alerta não encontrado."));
         BeanUtils.copyProperties(dto, model);
         model.setAlert(alert);
         return new NotificationDTO(notificationRepository.save(model));

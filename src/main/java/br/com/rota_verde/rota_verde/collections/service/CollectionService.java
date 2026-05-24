@@ -6,9 +6,13 @@ import br.com.rota_verde.rota_verde.collections.model.CollectionsModel;
 import br.com.rota_verde.rota_verde.collections.repository.CollectionsRepository;
 import br.com.rota_verde.rota_verde.containers.model.ContainerModel;
 import br.com.rota_verde.rota_verde.containers.repository.ContainerRepository;
+import br.com.rota_verde.rota_verde.exception.CollectionNotFoundException;
+import br.com.rota_verde.rota_verde.exception.ContainerNotFoundException;
 import lombok.Getter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -27,7 +31,7 @@ public class CollectionService {
 
     public CollectionDTO saveCollection(CreateCollectionDTO dto) {
         ContainerModel container = containerRepository.findById(dto.containerId())
-                .orElseThrow(() -> new RuntimeException("Container não encontrado."));
+                .orElseThrow(() -> new ContainerNotFoundException("Container não encontrado."));
 
         CollectionsModel model = new CollectionsModel();
         BeanUtils.copyProperties(dto, model);
@@ -38,25 +42,25 @@ public class CollectionService {
 
     public CollectionDTO findCollection(Long id) {
         return new CollectionDTO(collectionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Coleta não encontrada.")));
+                .orElseThrow(() -> new CollectionNotFoundException("Coleta não encontrada.")));
     }
 
-    public List<CollectionDTO> findManyCollections() {
-        return collectionRepository.findAll().stream()
-                .map(CollectionDTO::new).toList();
+    public Page<CollectionDTO> findManyCollections(Pageable pageable
+    ) {
+        return collectionRepository.findAll(pageable).map(CollectionDTO::new);
     }
 
     public void deleteCollection(Long id) {
         CollectionsModel model = collectionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Coleta não encontrada."));
+                .orElseThrow(() -> new CollectionNotFoundException("Coleta não encontrada."));
         collectionRepository.delete(model);
     }
 
     public CollectionDTO updateCollection(Long id, CreateCollectionDTO dto) {
         CollectionsModel model = collectionRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Coleta não encontrada."));
+                .orElseThrow(() -> new CollectionNotFoundException("Coleta não encontrada."));
         ContainerModel container = containerRepository.findById(dto.containerId())
-                .orElseThrow(() -> new RuntimeException("Container não encontrado."));
+                .orElseThrow(() -> new ContainerNotFoundException("Container não encontrado."));
         BeanUtils.copyProperties(dto, model);
         model.setContainer(container);
         return new CollectionDTO(collectionRepository.save(model));

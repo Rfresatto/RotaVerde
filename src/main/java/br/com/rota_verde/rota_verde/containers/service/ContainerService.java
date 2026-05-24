@@ -6,9 +6,13 @@ import br.com.rota_verde.rota_verde.containers.dto.ContainerDTO;
 import br.com.rota_verde.rota_verde.containers.dto.CreateContainerDTO;
 import br.com.rota_verde.rota_verde.containers.model.ContainerModel;
 import br.com.rota_verde.rota_verde.containers.repository.ContainerRepository;
+import br.com.rota_verde.rota_verde.exception.CollectionPointNotFoundException;
+import br.com.rota_verde.rota_verde.exception.ContainerNotFoundException;
 import lombok.Getter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -26,7 +30,7 @@ public class ContainerService {
 
     public ContainerDTO saveContainer(CreateContainerDTO dto) {
         CollectionPointsModel collectionPoint = collectionPointRepository.findById(dto.collectionPointId())
-                .orElseThrow(() -> new RuntimeException("Ponto de coleta não encontrado."));
+                .orElseThrow(() -> new CollectionPointNotFoundException("Ponto de coleta não encontrado."));
 
         ContainerModel model = new ContainerModel();
         BeanUtils.copyProperties(dto, model);
@@ -36,25 +40,25 @@ public class ContainerService {
 
     public ContainerDTO findContainer(Long id) {
         return new ContainerDTO(containerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Container não encontrado.")));
+                .orElseThrow(() -> new ContainerNotFoundException("Container não encontrado.")));
     }
 
-    public List<ContainerDTO> findManyContainers() {
-        return containerRepository.findAll().stream()
-                .map(ContainerDTO::new).toList();
+    public Page<ContainerDTO> findManyContainers(Pageable pageable) {
+        return containerRepository.findAll(pageable)
+                .map(ContainerDTO::new);
     }
 
     public void deleteContainer(Long id) {
         ContainerModel model = containerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Container não encontrado."));
+                .orElseThrow(() -> new ContainerNotFoundException("Container não encontrado."));
         containerRepository.delete(model);
     }
 
     public ContainerDTO updateContainer(Long id, CreateContainerDTO dto) {
         ContainerModel model = containerRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Container não encontrado."));
+                .orElseThrow(() -> new ContainerNotFoundException("Container não encontrado."));
         CollectionPointsModel collectionPoint = collectionPointRepository.findById(dto.collectionPointId())
-                .orElseThrow(() -> new RuntimeException("Ponto de coleta não encontrado."));
+                .orElseThrow(() -> new CollectionPointNotFoundException("Ponto de coleta não encontrado."));
         BeanUtils.copyProperties(dto, model);
         model.setCollectionPoint(collectionPoint);
         return new ContainerDTO(containerRepository.save(model));
