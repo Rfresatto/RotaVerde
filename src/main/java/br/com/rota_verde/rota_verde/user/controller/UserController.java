@@ -1,7 +1,7 @@
 package br.com.rota_verde.rota_verde.user.controller;
 
 import br.com.rota_verde.rota_verde.user.dto.UserDefaultViewDTO;
-import br.com.rota_verde.rota_verde.user.dto.UserSingInDTO;
+import br.com.rota_verde.rota_verde.user.dto.CreateUserDTO;
 import br.com.rota_verde.rota_verde.user.model.UserModel;
 import br.com.rota_verde.rota_verde.user.service.UserService;
 import jakarta.validation.Valid;
@@ -21,9 +21,9 @@ public class UserController {
 
     @PostMapping("/user")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<UserDefaultViewDTO> save(@RequestBody @Valid UserSingInDTO userSingInDTO) {
+    public ResponseEntity<UserDefaultViewDTO> save(@RequestBody @Valid CreateUserDTO createUserDTO) {
         try {
-            UserDefaultViewDTO saved = userService.saveUser(userSingInDTO);
+            UserDefaultViewDTO saved = userService.saveUser(createUserDTO);
             return ResponseEntity.status(HttpStatus.CREATED).body(saved);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
@@ -40,23 +40,23 @@ public class UserController {
         }
     }
 
-    @GetMapping("/user/{userOid}")
-    public ResponseEntity<UserDefaultViewDTO> find(@PathVariable Long userOid) {
-            return ResponseEntity.ok(userService.findUser(userOid));
+    @GetMapping("/user/{userId}")
+    public ResponseEntity<UserDefaultViewDTO> find(@PathVariable Long userId) {
+            return ResponseEntity.ok(userService.findUser(userId));
     }
 
-    @DeleteMapping("/user/{userOid}")
+    @DeleteMapping("/user/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public ResponseEntity<Void> delete(@PathVariable Long userOid) {
+    public ResponseEntity<Void> delete(@PathVariable Long userId) {
         try {
-            userService.deleteUser(userOid);
+            userService.deleteUser(userId);
             return ResponseEntity.noContent().build();
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
     }
 
-    @PutMapping("/user/{userOid}")
+    @PutMapping("/user/{userId}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<UserModel> update(@RequestBody UserModel userModel) {
         try {

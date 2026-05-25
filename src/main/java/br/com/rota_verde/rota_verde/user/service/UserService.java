@@ -2,12 +2,13 @@ package br.com.rota_verde.rota_verde.user.service;
 
 import br.com.rota_verde.rota_verde.exception.UserNotFoundException;
 import br.com.rota_verde.rota_verde.user.dto.UserDefaultViewDTO;
-import br.com.rota_verde.rota_verde.user.dto.UserSingInDTO;
+import br.com.rota_verde.rota_verde.user.dto.CreateUserDTO;
 import br.com.rota_verde.rota_verde.user.model.UserModel;
 import br.com.rota_verde.rota_verde.user.repository.UserRepository;
 import lombok.Getter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,9 +21,15 @@ public class UserService {
     @Autowired
     private UserRepository userRepository;
 
-    public UserDefaultViewDTO saveUser(UserSingInDTO userSingInDTO) {
+    public UserDefaultViewDTO saveUser(CreateUserDTO createUserDTO) {
+
+        String passwordEncoded = new BCryptPasswordEncoder().encode(createUserDTO.password());
+
         UserModel user = new UserModel();
-        BeanUtils.copyProperties(userSingInDTO, user);
+        BeanUtils.copyProperties(createUserDTO, user);
+
+        user.setPassword(passwordEncoded);
+
         UserModel userSaved = userRepository.save(user);
         return new UserDefaultViewDTO(userSaved);
     }
@@ -52,7 +59,7 @@ public class UserService {
     }
 
     public UserModel updateUser(UserModel userModel) {
-        Optional<UserModel> optionalUserModel = userRepository.findById(userModel.getUserOid());
+        Optional<UserModel> optionalUserModel = userRepository.findById(userModel.getUserId());
 
         if (optionalUserModel.isEmpty()) {
             throw new UserNotFoundException("Usuário não encontrado.");

@@ -1,11 +1,14 @@
 package br.com.rota_verde.rota_verde.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -61,5 +64,15 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleGeneric(Exception ex) {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(buildBody(500, "Internal Server Error", "Erro interno no servidor."));
+    }
+
+    @ResponseStatus(HttpStatus.CONFLICT)
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public Map<String, String> handleIntegrityViolation(){
+        Map<String, String> errorMap = new HashMap<>();
+
+        errorMap.put("error", "Usuário já cadastrado!");
+
+        return  errorMap;
     }
 }
